@@ -95,6 +95,7 @@ class HistoricalRecords(object):
                 field.primary_key = False
                 field._unique = False
                 field.db_index = True
+                field.serialize = True
             if fk:
                 fields[field.name+"_id"] = field
             else:
@@ -132,7 +133,8 @@ class HistoricalRecords(object):
         }
 
     def post_save(self, instance, created, **kwargs):
-        self.create_historical_record(instance, created and '+' or '~')
+        if not kwargs.get('raw', False):
+            self.create_historical_record(instance, created and '+' or '~')
 
     def post_delete(self, instance, **kwargs):
         self.create_historical_record(instance, '-')
